@@ -17,5 +17,7 @@ $message->value3 = 3;
 $message->value4 = 4;
 
 echo $message;
+// OUTPUT 
+// {"header":{"name":"test","version":1,"newparam1":1,"newparam2":2,"newparam3":3},"body":{"value1":1,"value2":2,"value3":3,"value4":4}}
 
 ?>
