@@ -1,14 +1,19 @@
 <?php
 
+$limitsArray = array();
+$limitsArray['header'] = array();
+$limitsArray['header']['request'] = 'getlimit';
+
 // Get all the limits
-$maxUploadSize = (int)(ini_get('upload_max_filesize'));
-$maxPostSize = (int)(ini_get('post_max_size'));
-$memoryLimit = (int)(ini_get('memory_limit'));
+$limitsArray['body'] = array();
+$limitsArray['body']['uploadsize'] = (int)(ini_get('upload_max_filesize'));
+$limitsArray['body']['postsize'] = (int)(ini_get('post_max_size'));
+$limitsArray['body']['memorylimit'] = (int)(ini_get('memory_limit'));
 
 // Get the lowest limit
-$maxAllowedUpload = min($maxUploadSize, $maxPostSize, $memoryLimit);
+$limitsArray['body']['maxupload'] = min($limitsArray['body']['uploadsize'], $limitsArray['body']['postsize'], $limitsArray['body']['memorylimit']);
 
 // Echo the results
-echo($maxAllowedUpload);
+echo(json_encode($limitsArray));
 
 ?>
