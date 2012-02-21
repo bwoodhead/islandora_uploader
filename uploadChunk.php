@@ -13,14 +13,14 @@ if (isset($_POST['data']) )
     // Get the post data and create message
     $json = $_POST['data'];
     $jsonchunk = new ReceiveMessage($json);
-    $resultMessage = new SendMessage($jsonchunk->_name, $jsonchunk->_version);
     
 } else {
 
     // Create fake messages
     $jsonchunk = new SendMessage("fakeData", 1);
-    $resultMessage = new SendMessage("fakeUploadChunk", 1);
 }
+
+$resultMessage = new SendMessage("uploadChunkResults", 1);
 
 echo("************************************<br>");
 echo("Checksum: " . $fileId . "<br>");
