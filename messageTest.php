@@ -1,9 +1,9 @@
 <?php
 
-require_once('message.php');
+require_once('messages.php');
 
 // Create a message
-$message = new message('test', 1);
+$message = new SendMessage('test', 1);
 
 // Add some header params
 $message->_newparam1 = 1;
