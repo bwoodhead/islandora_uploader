@@ -1,3 +1,9 @@
+jQuery(document).ready(function() 
+{
+    checkBrowserSupport();
+    getLimits();
+});
+
 /**
  * Check to see if the broswer supports the file api
  */
