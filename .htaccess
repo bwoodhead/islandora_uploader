@@ -4,4 +4,4 @@ RewriteEngine on
 RewriteRule ^getlimit/?$ getLimit.php 
 
 # Create a upload chunk rule
-RewriteRule ^uploadchunk/([^/\.]+)/?$ uploadChunk.php?checksum=$1 
+RewriteRule ^uploadblock/([^/\.]+)/?$ uploadBlock.php?checksum=$1 

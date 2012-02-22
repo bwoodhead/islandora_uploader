@@ -1,10 +1,8 @@
 jQuery(document).ready(function() 
 {
+    // Check for browser support
     checkBrowserSupport();
-    getLimits();
     
-    //document.getElementById('files').addEventListener('change', displayFileInfo, false); 
-    $("#files").change(displayFileInfo);
 });
 
 /**
@@ -14,7 +12,8 @@ function checkBrowserSupport() {
     
     // Check for the various File API support.
     if (window.File && window.FileReader && window.FileList && window.Blob) {
-        //alert('Supported');
+        // Get the limits
+        checkServerLimits();
     } else {
         alert('The File APIs are not fully supported in this browser.');
     }
@@ -23,93 +22,93 @@ function checkBrowserSupport() {
 /**
  * Get the server upload and memory limits
  */
-function getLimits()
+function checkServerLimits()
 {
-//    var xhr = new XMLHttpRequest();
-//    xhr.open('GET', 'http://127.0.0.1/islandora_uploader/getlimit', true);
-//    xhr.responseType = 'text';
-
-//    xhr.onload = function(e) {
-//        if (this.status == 200) {
-//            //document.getElementById('list').innerHTML = '<ul>' + xhr.responseText + '</ul>';
-//            $("#list").html('<ul>' + xhr.responseText + '</ul>');
-//            return xhr.responseText;
-//        }
-//    };
-    
-//    xhr.send();    
-    
     $.getJSON("http://127.0.0.1/islandora_uploader/getlimit",
         function(data) {
-            console.log("my object: %o", data);
-            $("#list").html('<ul>' + data['header']['name'] + '</ul>');
-            $("#list").append('<ul>' + data['body']['maxupload'] + '</ul>');
-            //$.each(data.items, function(i,item) {
-            //    $("#list").append(data.items);
-            //});
+            // Create a global variable 
+            maxUploadSize = $("#list").append('<ul>' + data['body']['maxupload'] + '</ul>');
+            
+            // Show the upload option
+            $("#form").show();
+            
+            // Add a listener to the files
+            $("#files").change(uploadFile);
         }
     );    
 }
 
-/**
- * Event handler for file select that desplays file information
- */
-function displayFileInfo(evt) {
+function uploadFile(evt) 
+{
+    // Create a global variable 
+    json = new Object();
+    json['header'] = new Object();
+    json['header']['name'] = "uploadBlocks";
+    json['header']['version'] = 1;
+    json['body'] = new Object();
     
-    var files = evt.target.files; // FileList object
-
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-    output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                f.size, ' bytes, last modified: ',
-                f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                '</li>');
+    // Loop through all the files
+    for (var i = 0, file; file = files[i]; i++) {
+        
+        // Upload the blockss
+        uploadBlocks(file, 0);
     }
-    
-    //document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-    $("#list").html('<ul>' + output.join('') + '</ul>');
-}
-
-/**
- * Post a chunk of data 
- */
-function uploadChunk(blobOrFile) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/server', true);
-  xhr.onload = function(e) {
-    if (this.status == 200) {
-        document.getElementById('list').innerHTML = '<ul>' + xhr.responseText + '</ul>';
-        return xhr.responseText;
-    }
-  };
-  xhr.send(blobOrFile);
 }
 
 /**
  * Upload the file
  */
-function uploadFile(evt) {
-    var files = evt.target.files[0]; // FileList object
-
-    const BYTES_PER_CHUNK = 1024 * 1024; // 1MB chunk sizes.
-    const SIZE = blob.size;
-
-    var start = 0;
-    var end = BYTES_PER_CHUNK;
-
-    while(start < SIZE) {
-
-        if ('mozSlice' in blob) {
-            var chunk = blob.mozSlice(start, end);
-        } else {
-            var chunk = blob.webkitSlice(start, end);
-        }
-
-        uploadChunk(chunk);
-
-        start = end;
-        end = start + BYTES_PER_CHUNK;
-    }
- }
+function uploadBlocks(file, currentBlock) {
+    
+    // Block is 1/4 of the upload size
+    var blockSize = maxUploadSize/4;
  
+    // Create a start chunk variable
+    var startOfBlock = currentBlock*blockSize;
+    var endOfBlock = startOfBlock + blockSize;
+
+    // Have we finished
+    if ( startOfBlock >= file.size) {
+        
+        // Should check the status of the file
+        return;
+    }
+
+    // Get the blob
+    if ('mozSlice' in blob) {
+        var chunk = blob.mozSlice(startOfBlock, endOfBlock);
+    } else {
+        var chunk = blob.webkitSlice(startOfBlock, endOfBlock);
+    }
+
+    // Add the data to the call
+    json['body']['index'] = currentBlock;
+    json['body']['block'] = Base64.encode(chunk);
+
+    // Create a checksum to make sure the file hasn't changed'
+    hash = checksum(file.name + file.type + file.size + file.lastModifiedDate.toLocaleDateString());
+
+    // Post the json
+    $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, $json,
+        function(data) {
+            // Do something with the response
+
+            // Upload the next block
+            uploadBlocks(file, currentBlock+1);
+    });
+ }
+
+/**
+ * Create a simple checksum
+ */
+function checksum(s)
+{
+  var i;
+  var chk = 0x12345678;
+
+  for (i = 0; i < s.length; i++) {
+    chk += (s.charCodeAt(i) * i);
+  }
+
+  return chk;
+}
