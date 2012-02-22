@@ -29,8 +29,7 @@ class FileAssemble
             mkdir($this->storage);
         }        
         // Load any previous data
-        loadExistingData();
-        
+        loadExistingData();    
     }
     
     /**

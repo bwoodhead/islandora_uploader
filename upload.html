@@ -7,8 +7,10 @@
         <script src="upload.js"></script>
     </head>
     <body>
-        <body>
-        <input type="file" id="files" name="files[]" multiple />
+        <form action="multipart.jsp" method="POST" enctype="multipart/form-data">
+            <input type="file" id="files" name="files[]" multiple />
+        </form>
         <output id="list"></output>
     </body>
 </html>
+
