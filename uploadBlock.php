@@ -1,35 +1,43 @@
 <?php
 
 require_once('messages.php');
+require_once('FileAssemble.php');
 
-if (isset($_GET['checksum']) )
-{
-    $fileId = $_GET['checksum']; 
+if ( ! isset($_GET['checksum']) ) {
+    die("Missing checksum");
+}
+if ( !isset($_POST['header']) ) {
+    die("Missing data");
 }
 
-// Get the post data
-if (isset($_POST['data']) )
-{
-    // Get the post data and create message
-    $json = $_POST['data'];
-    $jsonchunk = new ReceiveMessage($json);
+$fileId = $_GET['checksum']; 
+$json = new ReceiveMessage($_POST);
     
-} else {
+// Create the file assemble class
+$fileUploader = new FileAssemble($json->filename, $fileId, $json->totalblocks);
 
-    // Create fake messages
-    $jsonchunk = new SendMessage("fakeData", 1);
-}
+// Add the data
+$fileUploader->addChunk($json->index, $json->block);
 
+// Create a response
 $resultMessage = new SendMessage("uploadChunkResults", 1);
 
+// Tell the client what blocks are missing
+$missingList = $fileUploader->getMissing();
+$resultMessage->missing = $missingList[0];
+
+// Echo the results
+echo ($resultMessage);
+/*
 echo("************************************<br>");
 echo("Checksum: " . $fileId . "<br>");
 echo("************************************<br>");
 
-echo("Received: " . $jsonchunk . "<br>");
+echo("Received: " . $json . "<br>");
 echo("************************************<br>");
 
 echo("Results: " . $resultMessage ."<br>");
 echo("************************************<br>");
+*/
 
 ?>

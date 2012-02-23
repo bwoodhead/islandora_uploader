@@ -22,14 +22,14 @@ class FileAssemble
         $this->totalChunks = $totalChunks;
         
         // Setup the directory
-        $this->storage = realpath('./') . $checksum;
+        $this->storage = realpath('./') . '/' . $checksum . '/';
         
         // If the directory isn't there then create it
         if ( ! is_dir( $this->storage ) ) {
             mkdir($this->storage);
         }        
         // Load any previous data
-        loadExistingData();    
+        $this->loadExistingData();    
     }
     
     /**
@@ -39,18 +39,18 @@ class FileAssemble
      * @param type $checksum 
      */
     public function addChunk($id, $data, $checksum=null) {
-
+        
         // Create the file
-        $fileHandler = fopen($this->storage ."/". $id . ".chk", 'w');
+        $fileHandler = fopen($this->storage . $id . ".chk", 'w');
         
         // Write the data
-        fwrite($data);
+        fwrite($fileHandler, $data);
         
         // Close the file
         fclose($fileHandler);
         
         // Register the chunk
-        registerChunk($id . ".chk");
+        $this->registerChunk($id);
     }
     
     /**
@@ -76,7 +76,7 @@ class FileAssemble
     private function registerChunk($id)
     {
         // Create a checksum and
-        $this->chunkList[$id] = sha1_file($this->storage ."/". $id . ".chk");
+        $this->chunkList[$id] = sha1_file($this->storage . $id . ".chk");
         
         if ( count($this->chunkList) == $this->totalChunks )
         {
@@ -107,13 +107,13 @@ class FileAssemble
                 if ($entry != "." && $entry != "..") {
                     
                     // Split the file name on the dot
-                    $fileName = split($entry);
-                    
+                    $fileName = explode(".", $entry);
+
                     // Check the file extension
                     if ( strcmp(end($fileName), "chk") ) {
-                        
+                                            
                         // Register the chunk
-                        registerChunk(start($fileName));
+                        $this->registerChunk( $fileName[0] );
                     }
                 }
             }

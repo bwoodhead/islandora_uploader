@@ -50,8 +50,15 @@ function uploadFile(evt)
     json['header']['version'] = 1;
     json['body'] = new Object();
 
+    // Block is 1/4 of the upload size
+    blockSize = maxUploadSize/4;
+
     // Loop through all the files
     for (var i = 0, f; f = files[i]; i++) {
+        
+        json['body']['filename'] = f.name;
+        json['body']['filesize'] = f.size;
+        json['body']['totalblocks'] = Math.ceil(f.size/blockSize); 
         
         // Upload the blockss
         uploadBlocks(f, 0);
@@ -67,9 +74,6 @@ function uploadBlocks(file, currentBlock) {
 
     // Store the file in a global
     currentFile = file;
-
-    // Block is 1/4 of the upload size
-    var blockSize = maxUploadSize/4;
  
     // Create a start chunk variable
     var startOfBlock = currentBlock * blockSize;

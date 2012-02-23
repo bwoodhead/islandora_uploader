@@ -96,8 +96,18 @@ class ReceiveMessage extends BaseMessage
      */
     public function __construct(&$json) 
     {
+        $this->values = $json;
+    }  
+}
+/*
+class ReceiveMessage extends BaseMessage
+{
+    public function __construct(&$json) 
+    {
         $this->values = json_decode($json);
     }  
 }
+ * 
+ */
 
 ?>
