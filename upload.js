@@ -41,19 +41,20 @@ function checkServerLimits()
 function uploadFile(evt) 
 {
     $("#list").append('<ul> uploadFile </ul>');
-    
+    var files = evt.target.files;
+        
     // Create a global variable 
     json = new Object();
     json['header'] = new Object();
     json['header']['name'] = "uploadBlocks";
     json['header']['version'] = 1;
     json['body'] = new Object();
-    
+
     // Loop through all the files
-    for (var i = 0, file; file = files; i++) {
+    for (var i = 0, f; f = files[i]; i++) {
         
         // Upload the blockss
-        uploadBlocks(file, 0);
+        uploadBlocks(f, 0);
     }
 }
 
@@ -64,45 +65,68 @@ function uploadBlocks(file, currentBlock) {
     
     $("#list").append('<ul> uploadBlocks ' + currentBlock + '</ul>');
 
+    // Store the file in a global
+    currentFile = file;
+
     // Block is 1/4 of the upload size
     var blockSize = maxUploadSize/4;
  
     // Create a start chunk variable
-    var startOfBlock = currentBlock*blockSize;
+    var startOfBlock = currentBlock * blockSize;
     var endOfBlock = startOfBlock + blockSize;
 
     // Have we finished
-    if ( startOfBlock >= file.size) {
+    if ( startOfBlock >= currentFile.size) {
         
         // Should check the status of the file
         return;
     }
 
-    // Get the blob
-    if ('mozSlice' in blob) {
-        var chunk = blob.mozSlice(startOfBlock, endOfBlock);
-    } else {
-        var chunk = blob.webkitSlice(startOfBlock, endOfBlock);
-    }
-
-    // Add the data to the call
+    // Store the current block
     json['body']['index'] = currentBlock;
-    json['body']['block'] = Base64.encode(chunk);
 
     // Create a checksum to make sure the file hasn't changed'
-    hash = checksum(file.name + file.type + file.size + file.lastModifiedDate.toLocaleDateString());
+    hash = checksum(currentFile.name + currentFile.type + currentFile.size + currentFile.lastModifiedDate.toLocaleDateString());
+    
+    // Create the file reader
+    var reader = new FileReader();
+    reader.onloadend = readFileEnded;
 
-    // Post the json
-    $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, $json,
-        function(data) {
-            // Do something with the response
-            $("#list").append('<ul>' + data + '</ul>');
-            
-            
-            // Upload the next block
-            uploadBlocks(file, currentBlock+1);
-    });
+    // Get the blob
+    if ('mozSlice' in currentFile) {
+        var chunk = currentFile.mozSlice(startOfBlock, endOfBlock);
+    } else {
+        var chunk = currentFile.webkitSlice(startOfBlock, endOfBlock);
+    }
+
+    // Read the binary string
+    reader.readAsBinaryString(chunk);
  }
+
+
+/**
+ * File read handler
+ */
+function readFileEnded(evt) {
+
+    if (evt.target.readyState == FileReader.DONE) { 
+
+        var block = evt.target.result;
+        // Add the data to the call
+        json['body']['block'] = Base64.encode(block);
+
+        // Post the json
+        $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, json,
+            function(data) {
+                // Do something with the response
+                $("#list").append('<ul>' + data + '</ul>');
+
+                // Upload the next block
+                uploadBlocks(currentFile, json['body']['index']+1);
+            }
+        );
+    }
+}
 
 /**
  * Create a simple checksum
