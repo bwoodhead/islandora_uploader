@@ -27,7 +27,7 @@ function checkServerLimits()
     $.getJSON("http://127.0.0.1/islandora_uploader/getlimit",
         function(data) {
             // Create a global variable 
-            maxUploadSize = $("#list").append('<ul>' + data['body']['maxupload'] + '</ul>');
+            maxUploadSize = data['body']['maxupload'];
             
             // Show the upload option
             $("#form").show();
@@ -40,6 +40,8 @@ function checkServerLimits()
 
 function uploadFile(evt) 
 {
+    $("#list").append('<ul> uploadFile </ul>');
+    
     // Create a global variable 
     json = new Object();
     json['header'] = new Object();
@@ -48,7 +50,7 @@ function uploadFile(evt)
     json['body'] = new Object();
     
     // Loop through all the files
-    for (var i = 0, file; file = files[i]; i++) {
+    for (var i = 0, file; file = files; i++) {
         
         // Upload the blockss
         uploadBlocks(file, 0);
@@ -60,6 +62,8 @@ function uploadFile(evt)
  */
 function uploadBlocks(file, currentBlock) {
     
+    $("#list").append('<ul> uploadBlocks ' + currentBlock + '</ul>');
+
     // Block is 1/4 of the upload size
     var blockSize = maxUploadSize/4;
  
@@ -92,7 +96,9 @@ function uploadBlocks(file, currentBlock) {
     $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, $json,
         function(data) {
             // Do something with the response
-
+            $("#list").append('<ul>' + data + '</ul>');
+            
+            
             // Upload the next block
             uploadBlocks(file, currentBlock+1);
     });
