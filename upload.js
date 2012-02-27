@@ -71,6 +71,7 @@ function uploadFile(evt)
 function uploadBlocks(file, currentBlock) {
     
     //$("#list").append('<ul> uploadBlocks ' + currentBlock + '</ul>');
+    $("#list").text('Block: ' + currentBlock + '/' + json['body']['totalblocks']);
 
     // Store the file in a global
     currentFile = file;
