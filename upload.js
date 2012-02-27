@@ -40,7 +40,7 @@ function checkServerLimits()
 
 function uploadFile(evt) 
 {
-    $("#list").append('<ul> uploadFile </ul>');
+    //$("#list").append('<ul> uploadFile </ul>');
     var files = evt.target.files;
         
     // Create a global variable 
@@ -70,7 +70,7 @@ function uploadFile(evt)
  */
 function uploadBlocks(file, currentBlock) {
     
-    $("#list").append('<ul> uploadBlocks ' + currentBlock + '</ul>');
+    //$("#list").append('<ul> uploadBlocks ' + currentBlock + '</ul>');
 
     // Store the file in a global
     currentFile = file;
@@ -123,11 +123,20 @@ function readFileEnded(evt) {
         // Post the json
         $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, json,
             function(data) {
-                // Do something with the response
-                $("#list").append('<ul>' + data + '</ul>');
+
+                // Parse the JSON response
+                data = jQuery.parseJSON(data);
+                
+                // Check to see if we are missing some blocks
+                if ( data["body"]["missing"] == 0 )
+                {
+                    // upload complete callback
+                    uploadComplete(currentFile);
+                    return;
+                }
 
                 // Upload the next block
-                uploadBlocks(currentFile, json['body']['index']+1);
+                uploadBlocks(currentFile, data['body']['missing']);
             }
         );
     }
@@ -146,4 +155,12 @@ function checksum(s)
   }
 
   return chk;
+}
+
+/**
+ * Uploade complete callback
+ */
+function uploadComplete(file)
+{
+    $("#list").append('<ul>Upload Complete</ul>'); 
 }

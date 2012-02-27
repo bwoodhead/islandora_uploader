@@ -24,6 +24,8 @@ $resultMessage = new SendMessage("uploadChunkResults", 1);
 
 // Tell the client what blocks are missing
 $missingList = $fileUploader->getMissing();
+
+// Get the first element in the list
 $resultMessage->missing = $missingList[0];
 
 // Echo the results

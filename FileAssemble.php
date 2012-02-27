@@ -107,14 +107,13 @@ class FileAssemble
     {
         $missing = array();
         
-        for( $i = 0; $i < $this->totalChunks; $i++) {
+        for( $i = 1; $i <= $this->totalChunks; $i++) {
             
             if( ! array_key_exists($i, $this->chunkList)) {
                 
                 $missing[] = $i;
             }
         }
-        
         if ( count($missing) == 0 ) {
             
             $missing[] = 0;
