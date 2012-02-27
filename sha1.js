@@ -1,3 +1,5 @@
+// Sha1 creates a checkum out of a string.
+// Should be used to uniquely identify a file and its contents.
 function SHA1 (msg) {
  
 	function rotate_left(n,s) {

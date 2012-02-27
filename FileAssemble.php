@@ -4,8 +4,8 @@ class FileAssemble
 {
     private $name;
     private $checksum;
-    private $totalChunks;
-    private $chunkList = array();
+    private $totalBlocks;
+    private $blockList = array();
     private $storage;
     
     /**
@@ -14,12 +14,12 @@ class FileAssemble
      * @param type $checksum
      * @param type $totalChunks 
      */
-    public function __construct($name, $checksum, $totalChunks) {
+    public function __construct($name, $checksum, $totalBlocks) {
         
         // Store the parameters
         $this->name = $name;
         $this->checksum = $checksum;
-        $this->totalChunks = $totalChunks;
+        $this->totalBlocks = $totalBlocks;
         
         // Setup the directory
         $this->storage = realpath('./') . '/' . $checksum . '/';
@@ -33,12 +33,12 @@ class FileAssemble
     }
     
     /**
-     * Store a file chunk
+     * Store a file block
      * @param type $id
      * @param type $data
      * @param type $checksum 
      */
-    public function addChunk($id, $data, $checksum=null) {
+    public function addBlock($id, $data, $checksum=null) {
         
         // Create the file
         $fileHandler = fopen($this->storage . $id . ".chk", 'w');
@@ -49,21 +49,21 @@ class FileAssemble
         // Close the file
         fclose($fileHandler);
         
-        // Register the chunk
-        $this->registerChunk($id);
+        // Register the block
+        $this->registerBlock($id);
     }
     
     /**
-     * Add the chunk to the internal list
+     * Add the block to the internal list
      * @param type $id 
      */
-    private function registerChunk($id)
+    private function registerBlock($id)
     {
         // Create a checksum and
         //$this->chunkList[$id] = sha1_file($this->storage . $id . ".chk");
-        $this->chunkList[$id] = $id;
+        $this->blockList[$id] = $id;
         
-        if ( count($this->chunkList) == $this->totalChunks ) {
+        if ( count($this->blockList) == $this->totalBlocks ) {
             
             $this->assembleFile();
         }
@@ -77,7 +77,7 @@ class FileAssemble
         // Create the file
         $fileHandler = fopen($this->storage . $this->name, 'w');
         
-        for ($i = 1; $i <= $this->totalChunks; $i++) {
+        for ($i = 1; $i <= $this->totalBlocks; $i++) {
 
             // Store the full path of a file
             $filename = $this->storage . $i . ".chk";
@@ -100,16 +100,16 @@ class FileAssemble
     }
     
     /**
-     * Get a list of missing chunks
+     * Get a list of missing blocks
      * @return int 
      */
     public function getMissing()
     {
         $missing = array();
         
-        for( $i = 1; $i <= $this->totalChunks; $i++) {
+        for( $i = 1; $i <= $this->totalBlocks; $i++) {
             
-            if( ! array_key_exists($i, $this->chunkList)) {
+            if( ! array_key_exists($i, $this->blockList)) {
                 
                 $missing[] = $i;
             }
@@ -142,8 +142,8 @@ class FileAssemble
                     // Check the file extension
                     if ( strcmp(end($fileName), "chk") == 0 ) {
                         
-                        // Register the chunk
-                        $this->registerChunk( $fileName[0] );
+                        // Register the block
+                        $this->registerBlock( $fileName[0] );
                     }
                 }
             }

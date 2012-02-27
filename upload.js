@@ -24,7 +24,8 @@ function checkBrowserSupport() {
  */
 function checkServerLimits()
 {
-    $.getJSON("http://127.0.0.1/islandora_uploader/getlimit",
+    //$.getJSON("http://127.0.0.1/islandora_uploader/getlimit",
+    $.getJSON("getlimit",
         function(data) {
             // Create a global variable 
             maxUploadSize = data['body']['maxupload'];
@@ -122,7 +123,8 @@ function readFileEnded(evt) {
         //json['body']['block'] = block;
 
         // Post the json
-        $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, json,
+        //$.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, json,
+        $.post("uploadblock/" + hash, json,
             function(data) {
 
                 // Parse the JSON response

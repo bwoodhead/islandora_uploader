@@ -1,3 +1,4 @@
+// Encode binary data for text transmision.
 var Base64 = {
     
     // private property
