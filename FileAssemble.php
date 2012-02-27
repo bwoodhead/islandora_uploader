@@ -54,32 +54,17 @@ class FileAssemble
     }
     
     /**
-     * Get a list of missing chunks
-     * @return int 
-     */
-    public function getMissing()
-    {
-        $missing = array();
-        for( $i = 0; $i < $this->totalChunks; $i++)
-        {
-            if( ! array_key_exists($i, $this->chunkList)) {
-                $missing[] = $i;
-            }
-        }
-        return $missing;
-    }
-    
-    /**
      * Add the chunk to the internal list
      * @param type $id 
      */
     private function registerChunk($id)
     {
         // Create a checksum and
-        $this->chunkList[$id] = sha1_file($this->storage . $id . ".chk");
+        //$this->chunkList[$id] = sha1_file($this->storage . $id . ".chk");
+        $this->chunkList[$id] = $id;
         
-        if ( count($this->chunkList) == $this->totalChunks )
-        {
+        if ( count($this->chunkList) == $this->totalChunks ) {
+            
             $this->assembleFile();
         }
     }
@@ -89,7 +74,53 @@ class FileAssemble
      */
     private function assembleFile()
     {
+        // Create the file
+        $fileHandler = fopen($this->storage . $this->name, 'w');
         
+        for ($i = 1; $i <= $this->totalChunks; $i++) {
+
+            // Store the full path of a file
+            $filename = $this->storage . $i . ".chk";
+            
+            // Open the block
+            $blockHandler = fopen($filename, 'r');
+            
+            // Read the full contents
+            $block = fread($blockHandler, filesize($filename));
+            
+            // Close the block
+            fclose($blockHandler);
+
+            // Write the data
+            fwrite($fileHandler, $block);
+        }
+        
+        // Close the file
+        fclose($fileHandler);   
+    }
+    
+    /**
+     * Get a list of missing chunks
+     * @return int 
+     */
+    public function getMissing()
+    {
+        $missing = array();
+        
+        for( $i = 0; $i < $this->totalChunks; $i++) {
+            
+            if( ! array_key_exists($i, $this->chunkList)) {
+                
+                $missing[] = $i;
+            }
+        }
+        
+        if ( count($missing) == 0 ) {
+            
+            $missing[] = 0;
+        }
+        
+        return $missing;
     }
     
     /**
@@ -102,16 +133,16 @@ class FileAssemble
             
             // Loop through the files
             while (false !== ($entry = readdir($handle))) {
-
+                
                 // Skip the extra files
                 if ($entry != "." && $entry != "..") {
                     
                     // Split the file name on the dot
                     $fileName = explode(".", $entry);
-
+                    
                     // Check the file extension
-                    if ( strcmp(end($fileName), "chk") ) {
-                                            
+                    if ( strcmp(end($fileName), "chk") == 0 ) {
+                        
                         // Register the chunk
                         $this->registerChunk( $fileName[0] );
                     }

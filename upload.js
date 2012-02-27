@@ -61,7 +61,7 @@ function uploadFile(evt)
         json['body']['totalblocks'] = Math.ceil(f.size/blockSize); 
         
         // Upload the blockss
-        uploadBlocks(f, 0);
+        uploadBlocks(f, 1);
     }
 }
 
@@ -76,7 +76,7 @@ function uploadBlocks(file, currentBlock) {
     currentFile = file;
  
     // Create a start chunk variable
-    var startOfBlock = currentBlock * blockSize;
+    var startOfBlock = (currentBlock-1) * blockSize;
     var endOfBlock = startOfBlock + blockSize;
 
     // Have we finished
@@ -109,7 +109,7 @@ function uploadBlocks(file, currentBlock) {
 
 
 /**
- * File read handler
+ * File read complete handler
  */
 function readFileEnded(evt) {
 
@@ -117,7 +117,8 @@ function readFileEnded(evt) {
 
         var block = evt.target.result;
         // Add the data to the call
-        json['body']['block'] = Base64.encode(block);
+        //json['body']['block'] = Base64.encode(block);
+        json['body']['block'] = block;
 
         // Post the json
         $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, json,
