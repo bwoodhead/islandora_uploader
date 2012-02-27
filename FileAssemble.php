@@ -92,7 +92,7 @@ class FileAssemble
             fclose($blockHandler);
 
             // Write the data
-            fwrite($fileHandler, $block);
+            fwrite($fileHandler, base64_decode($block));
         }
         
         // Close the file

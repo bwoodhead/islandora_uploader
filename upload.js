@@ -117,8 +117,8 @@ function readFileEnded(evt) {
 
         var block = evt.target.result;
         // Add the data to the call
-        //json['body']['block'] = Base64.encode(block);
-        json['body']['block'] = block;
+        json['body']['block'] = Base64.encode(block);
+        //json['body']['block'] = block;
 
         // Post the json
         $.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, json,
