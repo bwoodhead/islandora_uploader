@@ -1,12 +1,12 @@
-// Page has been loaded
-jQuery(document).ready(function() 
-{
-    // Check for browser support
-    Browser.checkBrowserSupport();
-    
-});
-
 (function ($) {
+
+    // Page has been loaded
+    jQuery(document).ready(function() 
+    {
+        // Check for browser support
+        Browser.checkBrowserSupport();
+    
+    });
 
     // Encode binary data for text transmision.
     var Base64 = {
