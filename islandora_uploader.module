@@ -1,0 +1,13 @@
+<?php
+
+function islandora_uploader_help($path, $arg) {
+  $output = '';  //declare your output variable
+  switch ($path) {
+    case "admin/help#islandora_uploader":
+      $output = '<p>'.  t("Islandora Uploader") .'</p>';
+      break;
+  }
+  return $output;
+} 
+
+?>
