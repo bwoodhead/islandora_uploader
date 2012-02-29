@@ -1,0 +1,6 @@
+name = Islandora Uploader
+description = Islandora large file chunk uploader
+package = Islandora Tools
+version = 11.3.1
+core = 6.x
+scripts[] = uploader.js
