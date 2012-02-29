@@ -1,13 +1,134 @@
 <?php
 
+/**
+ * Create the help
+ * @param type $path
+ * @param type $arg
+ * @return string 
+ */
 function islandora_uploader_help($path, $arg) {
-  $output = '';  //declare your output variable
-  switch ($path) {
-    case "admin/help#islandora_uploader":
-      $output = '<p>'.  t("Islandora Uploader") .'</p>';
-      break;
-  }
-  return $output;
+    $output = ''; 
+    switch ($path) {
+        case "admin/help#islandora_uploader":
+            $output = '<p>'.  t("Islandora Uploader") .'</p>';
+        break;
+    }
+    return $output;
 } 
 
-?>
+/**
+ * Define the security perms
+ * @return type 
+ */
+function islandora_uploader_perm() {
+
+    // Return an array of permisions
+    return array('upload', 'remove');
+} 
+
+/**
+ * Islandora uploader block
+ * @param type $op
+ * @param type $delta
+ * @param type $edit
+ * @return string 
+ */
+function islandora_uploader_block($op = 'list', $delta = 0, $edit = array()) {  
+   
+    // Create the block array to be returned at the end
+    $block = array();
+    
+    if ($op == "list") {
+
+        // Create the first block
+        $block[0]["info"] = t('Islandora Uploader Block');
+    } 
+    elseif ($op == "view") { 
+    
+        $block['subject'] = 'islandora uploader subject';
+        $block['content'] = 'copy paste tags here';
+    }
+    elseif ($op == "save") {
+        
+        // Reminders for later
+        //var_dump($op);
+    } 
+    elseif ($op == "configure") {
+        // Reminders for later
+        //var_dump($op);
+    }
+    
+    return $block; 
+}
+
+/**
+ * Islandora menu hook
+ * @return string 
+ */
+function islandora_uploader_menu() {
+
+    // Create an array to return
+    $items = array();
+    
+    // Set the variables
+    $items['admin/settings/islandora_uploader'] = array(
+        'title' => t('Islandora uploader module settings'),
+        'description' => t('Description of the islandora uploader'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('islandora_uploader_admin'),
+        'access arguments' => array('upload'),
+        'type' => MENU_NORMAL_ITEM,
+    );
+
+    // Return the link
+    return $items;
+}
+
+/**
+ * Islandora admin form
+ * @return type 
+ */
+function islandora_uploader_admin() {
+    
+    // Create an array to return later
+    $form = array();
+
+    // Create and add elements to the form
+    $form['islandora_uploader_get_limit_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Get Limits URL'),
+        '#default_value' => variable_get('islandora_uploader_get_limit_url', 'getlimit'),
+        '#size' => 60,
+        '#maxlength' => 60,
+        '#description' => t("The endpoint to get the server limits."),
+        '#required' => TRUE,
+    );
+    
+    // Create and add elements to the form
+    $form['islandora_uploader_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Upload URL'),
+        '#default_value' => variable_get('islandora_uploader_url', 'uploadblock'),
+        '#size' => 60,
+        '#maxlength' => 60,
+        '#description' => t("The uploader endpoint."),
+        '#required' => TRUE,
+    );
+    // Return the form
+    return system_settings_form($form);
+}
+
+/**
+ * Islandora admin validator
+ * @param type $form
+ * @param type $form_state 
+ */
+function islandora_uploader_admin_validate($form, &$form_state) {
+    
+    // Get the url from the form
+    $limit = $form_state['values']['islandora_uploader_get_limit_url'];
+
+    // Get the url from the form
+    $url = $form_state['values']['islandora_uploader_url'];
+}
+
