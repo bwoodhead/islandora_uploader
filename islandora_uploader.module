@@ -186,7 +186,7 @@ function islandora_uploader_get_limit() {
     $message->memorylimit = (int)(ini_get('memory_limit')) * 1024 * 1024;
 
     // Get the lowest limit
-    $message->maxupload = min($message->uploadsize, $message->postsize, $message->memorylimit, 1024*1024);
+    $message->maxupload = min($message->uploadsize, $message->postsize, $message->memorylimit, 1024*1024*4);
 
     // Echo the results
     echo($message);
