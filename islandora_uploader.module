@@ -37,7 +37,8 @@ function islandora_uploader_menu() {
 
     // Create an array to return
     $items = array();
-    
+
+    /*
     // Set the variables
     $items['admin/settings/islandora_uploader'] = array(
         'title' => t('Islandora uploader module settings'),
@@ -47,6 +48,7 @@ function islandora_uploader_menu() {
         'access arguments' => array('upload'),
         'type' => MENU_NORMAL_ITEM,
     );
+    */
     
     $items['islandora_uploader'] = array(
         'title' => 'Islandora Uploader',
