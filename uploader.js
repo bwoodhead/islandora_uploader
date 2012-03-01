@@ -70,17 +70,16 @@
         */
         checkServerLimits : function() 
         {
-            //$.getJSON("http://127.0.0.1/islandora_uploader/getlimit",
-            $.getJSON("getlimit",
+            $.getJSON("islandora_uploader/get_limit",
                 function(data) {
                     // Create a global variable 
                     maxUploadSize = data['body']['maxupload'];
 
                     // Show the upload option
-                    $("#form").show();
+                    $("#uploaderform").show();
 
                     // Add a listener to the files
-                    $("#files").change(Uploader.uploadFile);
+                    $("#uploaderfiles").change(Uploader.uploadFile);
                 }
             );    
         }
@@ -90,7 +89,6 @@
 
         uploadFile : function (evt) 
         {
-            //$("#list").append('<ul> uploadFile </ul>');
             var files = evt.target.files;
 
             // Create a global variable 
@@ -120,8 +118,7 @@
         */
         uploadBlocks : function(file, currentBlock) {
 
-            //$("#list").append('<ul> uploadBlocks ' + currentBlock + '</ul>');
-            $("#list").text('Block: ' + currentBlock + '/' + json['body']['totalblocks']);
+            $("#uploaderfilelist").text('Block: ' + currentBlock + '/' + json['body']['totalblocks']);
 
             // Store the file in a global
             currentFile = file;
@@ -141,7 +138,7 @@
             json['body']['index'] = currentBlock;
 
             // Create a checksum to make sure the file hasn't changed'
-            hash = Uploader.checksum(currentFile.name + currentFile.type + currentFile.size + currentFile.lastModifiedDate.toLocaleDateString());
+            json['body']['checksum'] = Uploader.checksum(currentFile.name + currentFile.type + currentFile.size + currentFile.lastModifiedDate.toLocaleDateString());
 
             // Create the file reader
             var reader = new FileReader();
@@ -166,23 +163,32 @@
             if (evt.target.readyState == FileReader.DONE) { 
 
                 var block = evt.target.result;
+                
                 // Add the data to the call
                 json['body']['block'] = Base64.encode(block);
-                //json['body']['block'] = block;
 
+                //$("#uploaderfilelist").append("<br>"+json['body']['filename'] + " " + json['body']['totalblocks'] +"<BR>");
+                
                 // Post the json
-                //$.post("http://127.0.0.1/islandora_uploader/uploadblock/" + hash, json,
-                $.post("uploadblock/" + hash, json,
+                $.post("islandora_uploader/upload_block/", json['body'],
                     function(data) {
-
+                        //$("#uploaderfilelist").append("<br>*******************************<br>Server Response: <br>" + data);
+                        //console.log(data);
+                        //return;
+                        
                         // Parse the JSON response
-                        data = jQuery.parseJSON(data);
+                        //data = jQuery.parseJSON(data);
+                        data = Drupal.parseJson(data);
+                        
+                        //$("#uploaderfilelist").append("<br>*******************************<br>Missing: <br>" + data['body']['missing']);
+                        
+                        //console.log(data);
 
                         // Check to see if we are missing some blocks
-                        if ( data["body"]["missing"] == 0 )
+                        if ( data['body']['missing'] == 0 )
                         {
                             // upload complete callback
-                            uploadComplete(currentFile);
+                            Uploader.uploadComplete(currentFile);
                             return;
                         }
 
@@ -198,7 +204,7 @@
         */
         uploadComplete : function (file)
         {
-            $("#list").append('<ul>Upload Complete</ul>'); 
+            $("#uploaderfilelist").append('<ul>Upload Complete</ul>'); 
         },
 
         /**

@@ -1,5 +1,8 @@
 <?php
 
+// Add the uploader code
+drupal_add_js(drupal_get_path('module', 'islandora_uploader') . '/uploader.js');
+
 /**
  * Create the help
  * @param type $path
@@ -57,10 +60,9 @@ function islandora_uploader_menu() {
         'access arguments' => array('upload'),
         'type' => MENU_CALLBACK
     );
-    $items['islandora_uploader/upload_block/%'] = array(
+    $items['islandora_uploader/upload_block'] = array(
         'title' => 'Islandora Uploader',
         'page callback' => 'islandora_uploader_upload_block',
-        'page arguments' => array(1,2),
         'access arguments' => array('upload'),
         'type' => MENU_CALLBACK
     );
@@ -156,7 +158,14 @@ function islandora_uploader_admin_validate($form, &$form_state) {
 function islandora_uploader_upload_page() {
 
     // Page holds the look and feel and is returned at the end
-    $page_content = "Fun with tags";
+    $page_content = '
+        <div id="uploaderform" hidden="true">
+            <form action="" method="POST" enctype="multipart/form-data">
+                <input type="file" id="uploaderfiles" name="uploaderfiles[]" multiple />
+            </form>
+            <output id="uploaderfilelist"></output>
+        </div>
+    ';
     
     // Return the conent for drupal to render
     return $page_content;
@@ -183,28 +192,17 @@ function islandora_uploader_get_limit() {
 
 }
 
-function islandora_uploader_upload_block($method, $checksum) {
+function islandora_uploader_upload_block() {
 
     // Include requirements
     require_once('messages.php');
     require_once('fileAssemble.php');
 
-    // Check to see if any data was sent
-    if ( !isset($_POST['header']) ) {
-        die("Missing data");
-    }
-
-    // Get the sent checksum
-    $checksum = $_GET['checksum']; 
-
-    // Create a message object out of the json
-    $json = new ReceiveMessage($_POST);
-    
     // Create the file assemble class
-    $fileUploader = new FileAssemble($json->filename, $fileId, $json->totalblocks);
+    $fileUploader = new FileAssemble($_POST['filename'], $_POST['checksum'], $_POST['totalblocks']);
 
     // Add the data
-    $fileUploader->addBlock($json->index, $json->block);
+    $fileUploader->addBlock($_POST['index'], $_POST['block']);
 
     // Create a response
     $resultMessage = new SendMessage("uploadBlockResults", 1);
@@ -216,7 +214,8 @@ function islandora_uploader_upload_block($method, $checksum) {
     $resultMessage->missing = $missingList[0];
 
     // Echo the results
+    //echo( json_encode(array("missing" =>  $missingList[0])) );
     echo($resultMessage);
-
+    
 }
 

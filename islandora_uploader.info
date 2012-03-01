@@ -4,5 +4,4 @@ dependencies[] = fedora_repository
 package = Islandora Tools
 version = 11.3.1
 core = 6.x
-scripts[] = uploader.js
 

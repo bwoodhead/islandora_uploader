@@ -29,7 +29,9 @@ class FileAssemble
             mkdir($this->storage);
         }        
         // Load any previous data
-        $this->loadExistingData();    
+        $this->loadExistingData(); 
+        
+        //echo( "Name: " . $this->name . " Checksum: " . $this->checksum . " TotalBlocks " . $this->totalBlocks . "<BR>");
     }
     
     /**
@@ -40,6 +42,8 @@ class FileAssemble
      */
     public function addBlock($id, $data, $checksum=null) {
         
+        //echo( "Add block - Id: " . $id . " data: " . $data. "<BR>");
+
         // Create the file
         $fileHandler = fopen($this->storage . $id . ".chk", 'w');
         

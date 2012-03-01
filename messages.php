@@ -92,11 +92,12 @@ class ReceiveMessage extends BaseMessage
 {
     /**
      * Create a message from a json string
-     * @param type $json 
+     * @param type $post 
      */
-    public function __construct(&$json) 
+    public function __construct(&$post) 
     {
-        $this->values = $json;
+        $this->values['header'] = json_decode($post['header']);
+        $this->values['body'] = json_decode($post['body']);
     }  
 }
 
