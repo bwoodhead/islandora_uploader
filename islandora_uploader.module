@@ -49,7 +49,6 @@ function islandora_uploader_menu() {
         'type' => MENU_NORMAL_ITEM,
     );
     */
-    
     $items['islandora_uploader'] = array(
         'title' => 'Islandora Uploader',
         'page callback' => 'islandora_uploader_upload_page',
@@ -182,12 +181,12 @@ function islandora_uploader_get_limit() {
     $message = new SendMessage('getlimit', 1);
 
     // Store all the defaults
-    $message->uploadsize = (int)(ini_get('upload_max_filesize')) * 1024;
-    $message->postsize = (int)(ini_get('post_max_size')) * 1024;
-    $message->memorylimit = (int)(ini_get('memory_limit')) * 1024;
+    $message->uploadsize = (int)(ini_get('upload_max_filesize')) * 1024 * 1024;
+    $message->postsize = (int)(ini_get('post_max_size')) * 1024 * 1024;
+    $message->memorylimit = (int)(ini_get('memory_limit')) * 1024 * 1024;
 
     // Get the lowest limit
-    $message->maxupload = min($message->uploadsize, $message->postsize, $message->memorylimit);
+    $message->maxupload = min($message->uploadsize, $message->postsize, $message->memorylimit, 1024*1024);
 
     // Echo the results
     echo($message);
