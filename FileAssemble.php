@@ -7,6 +7,7 @@ class FileAssemble
     private $totalBlocks;
     private $blockList = array();
     private $storage;
+    private $completed = false;
     
     /**
      * Constructor
@@ -22,7 +23,7 @@ class FileAssemble
         $this->totalBlocks = $totalBlocks;
         
         // Setup the directory
-        $this->storage = realpath('./') . '/' . $checksum . '/';
+        $this->storage = file_directory_temp() . '/' . $checksum . '/';
         
         // If the directory isn't there then create it
         if ( ! is_dir( $this->storage ) ) {
@@ -101,6 +102,9 @@ class FileAssemble
         
         // Close the file
         fclose($fileHandler);   
+        
+        // Flag the file completed
+        $this->completed = true;
     }
     
     /**
@@ -124,6 +128,20 @@ class FileAssemble
         }
         
         return $missing;
+    }
+    
+    
+    /**
+     * Get the file
+     * @return null 
+     */
+    public function getFileURI()
+    {
+        if ( ! $this->completed )
+        {
+            return null;
+        }
+        return file_directory_temp() . '/' . $checksum . '/' . $this->name;
     }
     
     /**
