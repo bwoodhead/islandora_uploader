@@ -374,6 +374,7 @@ uploaderUploading = false;
         {
             var key = Uploader.fileKey(file);
             $('#' + key).text('Upload Complete');
+            uploaderUploading = false;
             uploaderFileList.put(key, "1");
             Uploader.uploadFile();
         },
