@@ -1,7 +1,0 @@
-RewriteEngine on
-
-# Create a get limit rule
-RewriteRule ^getlimit/?$ getLimit.php 
-
-# Create a upload chunk rule
-RewriteRule ^uploadblock/([^/\.]+)/?$ uploadBlock.php?checksum=$1 

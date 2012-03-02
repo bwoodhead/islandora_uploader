@@ -215,6 +215,9 @@ uploaderUploading = false;
 
     var Uploader = {
         
+        /**
+         * Add a file to a queue to be uploaded
+         */
         addFileToQueue : function (evt) {
             
             var files = evt.target.files;
@@ -243,6 +246,9 @@ uploaderUploading = false;
             Uploader.uploadFile();
         },
 
+        /**
+         * Handles walking through the queue and starts uploading each file
+         */
         uploadFile : function () {
             
             var file = null;
@@ -380,6 +386,14 @@ uploaderUploading = false;
         },
 
         /**
+         * Generate a file checksum
+         */
+        fileKey : function(file)
+        {
+            return Uploader.checksum(file.name + file.fileName + file.type + file.size + file.lastModifiedDate.toLocaleDateString() + maxUploadSize);
+        },
+
+        /**
         * Create a simple checksum
         */
         checksum : function(s)
@@ -392,12 +406,6 @@ uploaderUploading = false;
             }
 
             return chk;
-        },
-        
-        fileKey : function(file)
-        {
-            return Uploader.checksum(file.name + file.fileName + file.type + file.size + file.lastModifiedDate.toLocaleDateString());
         }
-        
     }
 })(jQuery);
