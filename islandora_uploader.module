@@ -180,7 +180,7 @@ function islandora_uploader_upload_page() {
 function islandora_uploader_get_limit() {
 
     // Require message
-    require_once('messages.php');
+    require_once('Messages.inc');
 
     // Create a message
     $message = new SendMessage('getlimit', 1);
@@ -201,8 +201,8 @@ function islandora_uploader_get_limit() {
 function islandora_uploader_upload_block() {
 
     // Include requirements
-    require_once('messages.php');
-    require_once('fileAssemble.php');
+    require_once('Messages.inc');
+    require_once('FileAssemble.inc');
 
     // Create the file assemble class
     $fileUploader = new FileAssemble($_POST['filename'], $_POST['checksum'], $_POST['totalblocks']);
