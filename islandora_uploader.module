@@ -53,7 +53,7 @@ function islandora_uploader_menu() {
         'title' => 'Islandora Uploader',
         'page callback' => 'islandora_uploader_upload_page',
         'access arguments' => array('upload'),
-        'type' => MENU_CALLBACK
+        'type' => MENU_NORMAL_ITEM
     );
     $items['islandora_uploader/get_limit'] = array(
         'title' => 'Islandora Uploader',
@@ -160,14 +160,19 @@ function islandora_uploader_upload_page() {
 
     // Page holds the look and feel and is returned at the end
     $page_content = '
+        
         <div id="uploaderform" hidden="true">
+            <table id="filelist" border=1>
+                <tbody>
+                </tbody>
+            </table>
             <form action="" method="POST" enctype="multipart/form-data">
                 <input type="file" id="uploaderfiles" name="uploaderfiles[]" multiple />
             </form>
             <output id="uploaderfilelist"></output>
         </div>
     ';
-    
+        
     // Return the conent for drupal to render
     return $page_content;
 }

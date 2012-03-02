@@ -1,3 +1,132 @@
+/**
+ * Hashmap implementation for the file list
+ */
+function Map()
+{
+    // members
+    this.keyArray = new Array(); // Keys
+    this.valArray = new Array(); // Values
+
+    // methods
+    this.put = put;
+    this.get = get;
+    this.size = size;  
+    this.clear = clear;
+    this.keySet = keySet;
+    this.valSet = valSet;
+    this.showMe = showMe;  
+    this.findIt = findIt;
+    this.remove = remove;
+}
+
+function put( key, val )
+{
+    var elementIndex = this.findIt( key );
+
+    if( elementIndex == (-1) )
+    {
+        this.keyArray.push( key );
+        this.valArray.push( val );
+    }
+    else
+    {
+        this.valArray[ elementIndex ] = val;
+    }
+}
+
+function get( key )
+{
+    var result = null;
+    var elementIndex = this.findIt( key );
+
+    if( elementIndex != (-1) )
+    {   
+        result = this.valArray[ elementIndex ];
+    }  
+
+    return result;
+}
+
+function remove( key )
+{
+    var result = null;
+    var elementIndex = this.findIt( key );
+
+    if( elementIndex != (-1) )
+    {
+        this.keyArray = this.keyArray.removeAt(elementIndex);
+        this.valArray = this.valArray.removeAt(elementIndex);
+    }  
+
+    return ;
+}
+
+function size()
+{
+    return (this.keyArray.length);  
+}
+
+function clear()
+{
+    for( var i = 0; i < this.keyArray.length; i++ )
+    {
+        this.keyArray.pop();
+        this.valArray.pop();   
+    }
+}
+
+function keySet()
+{
+    return (this.keyArray);
+}
+
+function valSet()
+{
+    return (this.valArray);   
+}
+
+function showMe()
+{
+    var result = "";
+
+    for( var i = 0; i < this.keyArray.length; i++ )
+    {
+        result += "Key: " + this.keyArray[ i ] + "\tValues: " + this.valArray[ i ] + "\n";
+    }
+    return result;
+}
+
+function findIt( key )
+{
+    var result = (-1);
+
+    for( var i = 0; i < this.keyArray.length; i++ )
+    {
+        if( this.keyArray[ i ] == key )
+        {
+            result = i;
+            break;
+        }
+    }
+    return result;
+}
+
+function removeAt( index )
+{
+    var part1 = this.slice( 0, index);
+    var part2 = this.slice( index+1 );
+
+    return( part1.concat( part2 ) );
+}
+Array.prototype.removeAt = removeAt;
+
+// Create a global file list :(
+uploaderFileList = new Map();
+uploaderUploading = false;
+
+/**
+ * Wrap code that uses jquery into a function
+ */
 (function ($) {
 
     // Page has been loaded
@@ -5,7 +134,6 @@
     {
         // Check for browser support
         Browser.checkBrowserSupport();
-    
     });
 
     // Encode binary data for text transmision.
@@ -79,18 +207,72 @@
                     $("#uploaderform").show();
 
                     // Add a listener to the files
-                    $("#uploaderfiles").change(Uploader.uploadFile);
+                    $("#uploaderfiles").change(Uploader.addFileToQueue);
                 }
-            );    
+                );    
         }
     }
 
     var Uploader = {
-
-        uploadFile : function (evt) 
-        {
+        
+        addFileToQueue : function (evt) {
+            
             var files = evt.target.files;
+            for (var i = 0, f; f = files[i]; i++) {
 
+                // Create a key to index the file
+                var key = Uploader.fileKey(f);
+                
+                // Check to see if we already have this file
+                if ( uploaderFileList.get(key) != null ) {
+                    continue;
+                }
+                
+                uploaderFileList.put(key, f);
+                $("#filelist").find('tbody').append(
+                    $('<tr>').append(
+                        $('<td>').text(f.fileName)
+                        ).append(
+                        $('<td>')
+                        .attr('id',key)
+                        .text('pending')
+                        )
+                    );
+            }
+            // Start the uploader
+            Uploader.uploadFile();
+        },
+
+        uploadFile : function () {
+            
+            var file = null;
+            if ( uploaderUploading == true) {
+                return;
+            }
+            uploaderUploading = true;
+            
+            // Get all the checksum keys
+            var keys = uploaderFileList.keySet();
+            
+            // Loop through all the keys looking for one that needs to be uploaded
+            for (var i = 0; i < keys.length; i++ ) {
+                
+                // Has it already been uploaded
+                if ( uploaderFileList.get(keys[i]) != 1)
+                {
+                    // Keep the file
+                    file = uploaderFileList.get(keys[i]);
+                    
+                    // Found a file so leave
+                    break;
+                }
+            }
+            // Did we complete all the uploads
+            if ( file == null ) {
+                uploaderUploading = false;
+                return;
+            }
+            
             // Create a global variable 
             json = new Object();
             json['header'] = new Object();
@@ -101,16 +283,12 @@
             // Block is 1/4 of the upload size
             blockSize = maxUploadSize/4;
 
-            // Loop through all the files
-            for (var i = 0, f; f = files[i]; i++) {
+            json['body']['filename'] = file.name;
+            json['body']['filesize'] = file.size;
+            json['body']['totalblocks'] = Math.ceil(file.size/blockSize); 
 
-                json['body']['filename'] = f.name;
-                json['body']['filesize'] = f.size;
-                json['body']['totalblocks'] = Math.ceil(f.size/blockSize); 
-
-                // Upload the blockss
-                Uploader.uploadBlocks(f, 1);
-            }
+            // Upload the blockss
+            Uploader.uploadBlocks(file, 1);
         }, 
 
         /**
@@ -118,7 +296,8 @@
         */
         uploadBlocks : function(file, currentBlock) {
 
-            $("#uploaderfilelist").text('Block: ' + currentBlock + '/' + json['body']['totalblocks']);
+            // Update the text
+            $('#' + Uploader.fileKey(file)).text('Block: ' + currentBlock + '/' + json['body']['totalblocks']);
 
             // Store the file in a global
             currentFile = file;
@@ -138,7 +317,7 @@
             json['body']['index'] = currentBlock;
 
             // Create a checksum to make sure the file hasn't changed'
-            json['body']['checksum'] = Uploader.checksum(currentFile.name + currentFile.type + currentFile.size + currentFile.lastModifiedDate.toLocaleDateString());
+            json['body']['checksum'] = Uploader.fileKey(currentFile);
 
             // Create the file reader
             var reader = new FileReader();
@@ -167,22 +346,11 @@
                 // Add the data to the call
                 json['body']['block'] = Base64.encode(block);
 
-                //$("#uploaderfilelist").append("<br>"+json['body']['filename'] + " " + json['body']['totalblocks'] +"<BR>");
-                
                 // Post the json
                 $.post("islandora_uploader/upload_block/", json['body'],
                     function(data) {
-                        //$("#uploaderfilelist").append("<br>*******************************<br>Server Response: <br>" + data);
-                        //console.log(data);
-                        //return;
-                        
-                        // Parse the JSON response
-                        //data = jQuery.parseJSON(data);
+
                         data = Drupal.parseJson(data);
-                        
-                        //$("#uploaderfilelist").append("<br>*******************************<br>Missing: <br>" + data['body']['missing']);
-                        
-                        //console.log(data);
 
                         // Check to see if we are missing some blocks
                         if ( data['body']['missing'] == 0 )
@@ -195,7 +363,7 @@
                         // Upload the next block
                         Uploader.uploadBlocks(currentFile, data['body']['missing']);
                     }
-                );
+                    );
             }
         },
 
@@ -204,7 +372,10 @@
         */
         uploadComplete : function (file)
         {
-            $("#uploaderfilelist").append('<ul>Upload Complete</ul>'); 
+            var key = Uploader.fileKey(file);
+            $('#' + key).text('Upload Complete');
+            uploaderFileList.put(key, "1");
+            Uploader.uploadFile();
         },
 
         /**
@@ -212,15 +383,20 @@
         */
         checksum : function(s)
         {
-        var i;
-        var chk = 0x12345678;
+            var i;
+            var chk = 0x12345678;
 
-        for (i = 0; i < s.length; i++) {
-            chk += (s.charCodeAt(i) * i);
+            for (i = 0; i < s.length; i++) {
+                chk += (s.charCodeAt(i) * i);
+            }
+
+            return chk;
+        },
+        
+        fileKey : function(file)
+        {
+            return Uploader.checksum(file.name + file.fileName + file.type + file.size + file.lastModifiedDate.toLocaleDateString());
         }
-
-        return chk;
-        }
-
+        
     }
 })(jQuery);
