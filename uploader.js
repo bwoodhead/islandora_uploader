@@ -120,7 +120,7 @@ function removeAt( index )
 }
 Array.prototype.removeAt = removeAt;
 
-// Create a global file list :(
+// Create a global file list and lock :(
 uploaderFileList = new Map();
 uploaderUploading = false;
 

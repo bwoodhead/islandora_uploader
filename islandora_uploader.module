@@ -1,8 +1,5 @@
 <?php
 
-// Add the uploader code
-drupal_add_js(drupal_get_path('module', 'islandora_uploader') . '/uploader.js');
-
 /**
  * Create the help
  * @param type $path
@@ -38,17 +35,6 @@ function islandora_uploader_menu() {
     // Create an array to return
     $items = array();
 
-    /*
-    // Set the variables
-    $items['admin/settings/islandora_uploader'] = array(
-        'title' => t('Islandora uploader module settings'),
-        'description' => t('Description of the islandora uploader'),
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('islandora_uploader_admin'),
-        'access arguments' => array('upload'),
-        'type' => MENU_NORMAL_ITEM,
-    );
-    */
     $items['islandora_uploader'] = array(
         'title' => 'Islandora Uploader',
         'page callback' => 'islandora_uploader_upload_page',
@@ -158,6 +144,9 @@ function islandora_uploader_admin_validate($form, &$form_state) {
 
 function islandora_uploader_upload_page() {
 
+    // Add the uploader code
+    drupal_add_js(drupal_get_path('module', 'islandora_uploader') . '/uploader.js');
+    
     // Page holds the look and feel and is returned at the end
     $page_content = '
         
