@@ -209,7 +209,7 @@ uploaderUploading = false;
                     // Add a listener to the files
                     $("#uploaderfiles").change(Uploader.addFileToQueue);
                 }
-                );    
+            );    
         }
     }
 
