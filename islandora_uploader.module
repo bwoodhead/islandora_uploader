@@ -45,13 +45,13 @@ function islandora_uploader_menu() {
         'title' => 'Islandora Uploader',
         'page callback' => 'islandora_uploader_get_limit',
         'access arguments' => array('upload'),
-        'type' => MENU_NORMAL_ITEM
+        'type' => MENU_CALLBACK
     );
     $items['islandora_uploader/upload_block'] = array(
         'title' => 'Islandora Uploader',
         'page callback' => 'islandora_uploader_upload_block',
         'access arguments' => array('upload'),
-        'type' => MENU_NORMAL_ITEM
+        'type' => MENU_CALLBACK
     );
     
     // Return the link
