@@ -101,57 +101,5 @@ class ReceiveMessage extends BaseMessage
     }  
 }
 
-interface Cache
-{
-    function getFedoraObject($objectName);
-    function addFedoraObject($objectName);
-}
-
-class HashMapCache
-{
-    private $hashmap = array();
-    
-    function getFedoraObject($objectName)
-    {
-        return $this->hashmap[$objectName];   
-    }
-    
-    function addFedoraObject($objectName)
-    {
-        $this->hashmap[$objectName] = $objectName;   
-    }
-}
-
-class MemcacheCache
-{
-    function getFedoraObject($objectName)
-    {
-        // Memcache
-    }
-    
-    function addFedoraObject($objectName)
-    {
-        // Memcache
-    }
-}
-
-class DisplayImage
-{
-    private $cache;
-    public function __construct(Cache $cache) {
-        $this->cache = $cache;
-    }
-    
-    public function getimage($name)
-    {
-        $obj = $this->cache->getFedoraObject($name);
-        if ( $obj != null )
-        {
-            return $obj;
-        }
-        
-        // Get the object
-    }
-}
 
 ?>
