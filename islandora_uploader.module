@@ -149,7 +149,9 @@ function islandora_uploader_upload_page() {
     
     // Page holds the look and feel and is returned at the end
     $page_content = '
-        
+        <div id="uploadermessagearea">
+            <output id="uploadermessage"></output>
+        </div>
         <div id="uploaderform" hidden="true">
             <table id="filelist" border=1>
                 <tbody>

@@ -181,6 +181,9 @@ uploaderUploading = false;
         */
         checkBrowserSupport : function () {
 
+            // Tell the user what we are doing
+            $('#uploadermessage').text("Checking for browser support.");
+            
             // Check for the various File API support.
             if (window.File && window.FileReader && window.FileList && window.Blob) {
                 // Get the limits
@@ -198,8 +201,16 @@ uploaderUploading = false;
         */
         checkServerLimits : function() 
         {
+            // Tell the user what we are doing
+            $('#uploadermessage').text("Getting the server limits.");
+            
+            // Get the limit from the server
             $.getJSON("islandora_uploader/get_limit",
                 function(data) {
+                    
+                    // Hide the message
+                    $("#uploadermessagearea").hide();
+                    
                     // Create a global variable 
                     maxUploadSize = data['body']['maxupload'];
 
