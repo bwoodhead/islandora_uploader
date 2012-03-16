@@ -329,11 +329,13 @@ uploaderUploading = false;
             var reader = new FileReader();
             reader.onloadend = Uploader.readFileEnded;
 
+            var chunk;
+            
             // Get the blob
             if ('mozSlice' in currentFile) {
-                var chunk = currentFile.mozSlice(startOfBlock, endOfBlock);
+                chunk = currentFile.mozSlice(startOfBlock, endOfBlock);
             } else {
-                var chunk = currentFile.webkitSlice(startOfBlock, endOfBlock);
+                chunk = currentFile.webkitSlice(startOfBlock, endOfBlock);
             }
 
             // Read the binary string
