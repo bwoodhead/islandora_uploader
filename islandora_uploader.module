@@ -41,13 +41,13 @@ function islandora_uploader_menu() {
         'access arguments' => array('upload'),
         'type' => MENU_NORMAL_ITEM
     );
-    $items['islandora_uploader/get_limit'] = array(
+    $items['islandora_uploader_get_limit'] = array(
         'title' => 'Islandora Uploader Get Limit',
         'page callback' => 'islandora_uploader_get_limit',
         'access arguments' => array('upload'),
         'type' => MENU_NORMAL_ITEM
     );
-    $items['islandora_uploader/upload_block'] = array(
+    $items['islandora_uploader_upload_block'] = array(
         'title' => 'Islandora Uploader Upload Block',
         'page callback' => 'islandora_uploader_upload_block',
         'access arguments' => array('upload'),
