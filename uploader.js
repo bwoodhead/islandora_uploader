@@ -205,7 +205,7 @@ uploaderUploading = false;
             $('#uploadermessage').text("Getting the server limits.");
             
             // Get the limit from the server
-            $.getJSON("islandora_uploader_get_limit",
+            $.getJSON("islandora_uploader/get_limit",
                 function(data) {
                     
                     // Hide the message
@@ -366,7 +366,7 @@ uploaderUploading = false;
                 json['body']['block'] = Base64.encode(block);
 
                 // Post the json
-                $.post("islandora_uploader_upload_block/", json['body'],
+                $.post("islandora_uploader/upload_block/", json['body'],
                     function(data) {
 
                         data = Drupal.parseJson(data);

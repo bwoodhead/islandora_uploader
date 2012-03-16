@@ -41,17 +41,17 @@ function islandora_uploader_menu() {
         'access arguments' => array('upload'),
         'type' => MENU_NORMAL_ITEM
     );
-    $items['islandora_uploader_get_limit'] = array(
+    $items['islandora_uploader/get_limit'] = array(
         'title' => 'Islandora Uploader Get Limit',
         'page callback' => 'islandora_uploader_get_limit',
         'access arguments' => array('upload'),
-        'type' => MENU_NORMAL_ITEM
+        'type' => MENU_CALLBACK
     );
-    $items['islandora_uploader_upload_block'] = array(
+    $items['islandora_uploader/upload_block'] = array(
         'title' => 'Islandora Uploader Upload Block',
         'page callback' => 'islandora_uploader_upload_block',
         'access arguments' => array('upload'),
-        'type' => MENU_NORMAL_ITEM
+        'type' => MENU_CALLBACK
     );
     
     // Return the link
@@ -186,8 +186,6 @@ function islandora_uploader_get_limit() {
 
     // Echo the results
     echo($message);
-    return $message;
-
 }
 
 function islandora_uploader_upload_block() {
@@ -214,7 +212,5 @@ function islandora_uploader_upload_block() {
     // Echo the results
     //echo( json_encode(array("missing" =>  $missingList[0])) );
     echo($resultMessage);
-    
-    return $message;
 }
 
