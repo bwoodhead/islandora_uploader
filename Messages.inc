@@ -122,7 +122,7 @@ class HashMapCache
     }
 }
 
-class Memcache
+class MemcacheCache
 {
     function getFedoraObject($objectName)
     {
