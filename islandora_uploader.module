@@ -186,6 +186,7 @@ function islandora_uploader_get_limit() {
 
     // Echo the results
     echo($message);
+    return $message;
 
 }
 
@@ -214,5 +215,6 @@ function islandora_uploader_upload_block() {
     //echo( json_encode(array("missing" =>  $missingList[0])) );
     echo($resultMessage);
     
+    return $message;
 }
 
